@@ -1,7 +1,8 @@
 from urllib.parse import urlparse, parse_qs, ParseResult
+from logging import getLogger
 
 
-def get_id_from_url(url: str) -> str | None:
+def get_id_from_calendar_url(url: str) -> str | None:
     parsed_url: ParseResult = urlparse(url)
     if "show_event" not in parsed_url.path:
         return None
@@ -13,3 +14,11 @@ def get_id_from_url(url: str) -> str | None:
     if index != -1:
         event_id = event_id[:index]
     return event_id
+
+
+def get_id_from_world_url(url: str) -> str | None:
+    parsed_url: ParseResult = urlparse(url)
+    path_comp = parsed_url.path.split("/")
+    if path_comp[-1] == "":
+        path_comp.pop()
+    return path_comp[-1]

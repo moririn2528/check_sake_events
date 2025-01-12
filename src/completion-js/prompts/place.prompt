@@ -1,0 +1,13 @@
+---
+model: googleai/gemini-1.5-flash-latest
+config:
+  temperature: 0
+input:
+  schema:
+    body: string
+output:
+  format: json
+  schema: PlaceSchema
+---
+日本酒に関するイベント情報が与えられます。このイベントの開催場所を教えてください。住所も書かれている場合はそれも教えてください。開催場所が複数ある場合はすべて答えてください。記載されていない場合は答えないでください。
+イベント情報: {{body}}

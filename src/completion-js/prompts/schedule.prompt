@@ -1,0 +1,12 @@
+---
+model: googleai/gemini-1.5-flash-latest
+config:
+  temperature: 0
+input:
+  schema: InputScheduleSchema
+output:
+  format: json
+  schema: OutputScheduleSchema
+---
+日本酒に関するイベント情報が与えられます。この情報から{{place}}で開催される日程、そして参加費用を抽出してください。開催場所が異なる日程は書かないください。記載されていない場合は出力しないでください。
+イベント情報: {{body}}

@@ -3,3 +3,12 @@ venv
 .scrapy
 __pycache__
 .env
+local.env
+*.log
+credentials.json
+node_modules
+
+tmp.py
+output.json
+*.zip
+.envrc

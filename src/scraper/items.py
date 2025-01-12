@@ -10,7 +10,6 @@ class EventItem(scrapy.Item):
     event_id = scrapy.Field()
     url = scrapy.Field()
     title = scrapy.Field()
-
-
-class OtherItem(scrapy.Item):
-    url = scrapy.Field()
+    body = scrapy.Field()
+    links = scrapy.Field()
+    address = scrapy.Field()
