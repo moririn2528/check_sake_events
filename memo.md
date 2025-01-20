@@ -48,3 +48,10 @@ Model "vertexai/gemini-1.5-flash" not found
 ```
 
 とエラーが出た。plugins に googleAI() を入れ、@genkit-ai/googleai/gemini15Flash のモデルにして解決。
+
+# view
+
+## next js
+
+use client のときに .env.local においた環境変数は NEXT*PUBLIC* が prefix となるものしか参照できない
+use server ならすべて使える
