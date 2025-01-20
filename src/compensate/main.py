@@ -6,17 +6,22 @@ import requests
 from html2text import html2text
 from urllib.parse import urlparse
 from datetime import datetime
-from typing import TypedDict, Annotated
+from typing import TypedDict, Annotated, Optional
 
-from .schema import Event, EventItem
+from .schema import Location, EventItem, EventInfo
+from .firestore import Firestore
 
 load_dotenv()
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 model = genai.GenerativeModel("gemini-1.5-flash")
-low_model = genai.GenerativeModel("gemini-1.5-flush-8b")
+low_model = genai.GenerativeModel("gemini-1.5-flash-8b")
 
 
-def search_info(item: EventItem) -> list[Event]:
+class APILimitError(Exception):
+    pass
+
+
+def extract_info(item: EventItem) -> list[EventInfo]:
     details: list[str] = []
     for link in item.links:
         try:
@@ -44,7 +49,7 @@ def search_info(item: EventItem) -> list[Event]:
 イベント情報:
 {body}""",
             generation_config=genai.GenerationConfig(
-                response_mime_type="application/json", response_schema=list[Event]
+                response_mime_type="application/json", response_schema=list[EventInfo]
             ),
         )
         return res.text
@@ -59,7 +64,7 @@ class StartDate(TypedDict):
 
 def extract_start_date(duration: str) -> datetime:
     try:
-        res = model.generate_content(
+        res = low_model.generate_content(
             f"""イベントの開催期間が与えられるので、そのイベントの開催開始日時を出力してください。
 時間までわかる場合は yyyy-mm-ddTHH:MM の形式で、時間がわからないときは　yyyy-mm-dd で出力してください。
 {duration}""",
@@ -72,6 +77,35 @@ def extract_start_date(duration: str) -> datetime:
     except Exception as e:
         print("Error:", e)
         return []
+
+
+def extract_location(item: EventItem):
+    info = extract_info(item)
+    locations: list[Location] = []
+    for e in info:
+        locations.append(
+            Location(
+                name=e["name"],
+                address=e["address"],
+                start=extract_start_date(e["datetime"]),
+                duration=e["datetime"],
+                price=e["price"],
+            )
+        )
+    return locations
+
+
+def main():
+    fs = Firestore()
+    stream = fs.stream()
+    try:
+        for item in stream:
+            locs = extract_location(item)
+            fs.compensate(item.event_id, locs)
+    except APILimitError:  # TODO: API LIMIT ERROR を raise するようにする
+        print(
+            "WARNING: API LIMIT EXCEEDED: you may execute this function after few minites"
+        )
 
 
 # サーバーのスタートや関数フローの開始

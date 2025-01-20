@@ -16,3 +16,10 @@ main.py は定期実行用だが、FIXME
 ## 正規化
 
 gemini を用いて情報を正規化する。compensate フォルダの main.py を実行
+
+# 詳細等
+
+## status
+
+- SCRAPED: スクレイピングしたあとの状態
+- FULFILLED: 補完後の状態

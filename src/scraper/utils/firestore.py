@@ -23,6 +23,7 @@ class Firestore:
                 "title": item["title"],
                 "body": item["body"],
                 "links": item["links"],
+                "status": "SCRAPED",
             }
         )
 
